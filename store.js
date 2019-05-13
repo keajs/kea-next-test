@@ -11,4 +11,7 @@ activatePlugin({
   }
 })
 
-export const initStore = () => getStore({})
+export const initStore = (initialState) => getStore({
+  preloadedState: initialState
+})
+
