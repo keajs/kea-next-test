@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { kea } from 'kea'
 
 const aboutLogic = kea({
-  // path: () => ['kea', 'about'],
+  path: () => ['kea', 'about'],
   actions: () => ({
     increment: amount => ({ amount }),
     decrement: amount => ({ amount })

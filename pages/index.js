@@ -3,7 +3,8 @@ import PropTypes from 'prop-types'
 import { kea } from 'kea'
 
 const indexLogic = kea({
-  // path: () => ['kea', 'index'],
+  path: () => ['kea', 'index'],
+  options: { lazy: true },
   actions: () => ({
     increment: amount => ({ amount }),
     decrement: amount => ({ amount })
@@ -11,7 +12,6 @@ const indexLogic = kea({
   reducers: ({ actions }) => ({
     counter: [
       0,
-      PropTypes.number,
       {
         [actions.increment]: (state, payload) => state + payload.amount,
         [actions.decrement]: (state, payload) => state - payload.amount
@@ -24,7 +24,15 @@ const indexLogic = kea({
       counter => counter * 2,
       PropTypes.number
     ]
-  })
+  }),
+  takeLatest: ({ actions, workers }) => ({
+    [actions.increment]: workers.updateCounter
+  }),
+  workers: {
+    updateCounter: function * (action) {
+      console.log('counter update triggered')
+    }
+  }
 })
 
 function Index ({ counter, doubleCounter, actions: { increment, decrement }}) {
@@ -44,8 +52,19 @@ function Index ({ counter, doubleCounter, actions: { increment, decrement }}) {
 
 Index.getInitialProps = async function (ctx) {
   console.log('Index.getInitialProps')
-  console.log(ctx)
+
+  indexLogic.mount()
   ctx.store.dispatch(indexLogic.actions.increment(1))
+
+  // indexLogic.mount().then(({ actions, selectors }) => {
+  //   console.log('indexLogic.mounted')
+  //   ctx.store.dispatch(actions.increment(1))
+  //   const counter = selectors.counter(ctx.store.getState())
+
+  //   // or perhaps we could bind dispatch and getState automatically and run it like this:
+  //   actions.increment(1)
+  //   const counter = selectors.counter()
+  // })
 }
 
 export default indexLogic(Index)

@@ -27,4 +27,4 @@ class MyApp extends App {
   }
 }
 
-export default withRedux(initStore, { debug: process.env.NODE_ENV === 'development' })(MyApp)
+export default withRedux(initStore, { debug: false })(MyApp)
