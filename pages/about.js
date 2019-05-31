@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { kea } from 'kea'
+import { kea, getContext } from 'kea'
 
 const aboutLogic = kea({
   // path: () => ['pages', 'about'],
@@ -42,6 +42,14 @@ function About ({ aboutCounter, aboutDoubleCounter, actions: { increment, decrem
       </button>
     </div>
   )
+}
+
+About.getInitialProps = async function (ctx) {
+  console.log('About.getInitialProps')
+
+  const { store } = getContext()
+
+  store.dispatch(aboutLogic.actions.increment(-1))
 }
 
 export default aboutLogic(About)

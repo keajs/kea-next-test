@@ -7,23 +7,11 @@ import Layout from '../components/MyLayout'
 
 import { getStore, activatePlugin, resetContext, getContext } from 'kea'
 
-const next = {
-  name: 'next',
-  afterWrapper (input, Klass, Kea) {
-    if (Klass.getInitialProps) {
-      Kea.getInitialProps = async function (ctx) {
-        await Klass.getInitialProps(ctx)
-      }
-    }
-  }
-}
-
 export const initStore = (initialState = {}) => {
   console.log("in initStore, got initialState", initialState)
 
   resetContext({
-    // debug: true, // bug: {debug:true} throws errors if there are logics without a path
-    plugins: [next],
+    debug: true,
     attachStrategy: 'replace',
     detachStrategy: 'lazy'
   })
@@ -45,14 +33,19 @@ class MyApp extends App {
 
     console.log('store state in MyApp.getInitialProps', getContext().store.getState())
 
-    // TODO: if on server and Component is Kea, mount the logic automatically?
+    let pageProps = {}
 
-    const pageProps = Component.getInitialProps
-      ? await Component.getInitialProps(ctx)
-      : {}
+    if (Component.getInitialProps) {
+      pageProps = await Component.getInitialProps(ctx)
+    } else if (Component._wrapper && Component._wrappedKlass && Component._wrappedKlass.getInitialProps) {
+      let unmount = Component._wrapper.mount && Component._wrapper.mount()
+
+      pageProps = await Component._wrappedKlass.getInitialProps(ctx)
+
+      unmount && unmount()
+    }
 
     let initialState = {}
-
     if (typeof window === 'undefined') {
       initialState = getContext().store.getState()
     }

@@ -49,8 +49,6 @@ Index.getInitialProps = async function (ctx) {
 
   const { store } = getContext()
 
-  indexLogic.mount()
-
   store.dispatch(indexLogic.actions.increment(1))
 }
 
