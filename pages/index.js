@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { kea } from 'kea'
 
 const indexLogic = kea({
-  // path: () => ['kea', 'index'],
+  path: () => ['pages', 'index'],
   actions: () => ({
     increment: amount => ({ amount }),
     decrement: amount => ({ amount })
@@ -30,6 +30,7 @@ const indexLogic = kea({
 function Index ({ counter, doubleCounter, actions: { increment, decrement }}) {
   return (
     <div>
+      <strong>Index</strong>
       <p>Counter: {counter}</p>
       <p>Double Counter: {doubleCounter}</p>
       <button type="button" onClick={() => increment(1)}>
@@ -44,8 +45,8 @@ function Index ({ counter, doubleCounter, actions: { increment, decrement }}) {
 
 Index.getInitialProps = async function (ctx) {
   console.log('Index.getInitialProps')
-  console.log(ctx)
-  ctx.store.dispatch(indexLogic.actions.increment(1))
+  // console.log(ctx)
+  // ctx.store.dispatch(indexLogic.actions.increment(1))
 }
 
 export default indexLogic(Index)
