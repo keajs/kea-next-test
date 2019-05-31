@@ -28,6 +28,7 @@ const aboutLogic = kea({
 })
 
 function About ({ acounter, adoubleCounter, actions: { increment, decrement }}) {
+  console.log('about render')
   return (
     <div>
       <strong>About</strong>

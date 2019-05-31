@@ -28,6 +28,7 @@ const indexLogic = kea({
 })
 
 function Index ({ counter, doubleCounter, actions: { increment, decrement }}) {
+  console.log('index render')
   return (
     <div>
       <strong>Index</strong>

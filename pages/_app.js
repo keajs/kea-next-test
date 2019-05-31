@@ -19,10 +19,12 @@ const next = {
 }
 
 export const initStore = (initialState = {}) => {
-  console.log("in initstore")
+  console.log("in initStore, got initialState", initialState)
   resetContext({
-    plugins: [next]
-    // autoMount: true
+    debug: true,
+    plugins: [next],
+    attachStrategy: 'replace',
+    detachStrategy: 'lazy'
   })
 
   getStore({
@@ -36,24 +38,15 @@ if (typeof window !== 'undefined') {
   window.getContext = getContext
 }
 
-// const withKea = function (App) {
-//   const isServer = typeof window === 'undefined';
- 
-//   return (
-
-//   )
-
-// }
-
 class MyApp extends App {
   static async getInitialProps({ Component, ctx }) {
-    console.log('myapp getinitalprops')
+    console.log('MyApp.getInitialProps')
 
     if (typeof window === 'undefined') {
       initStore()
     }
 
-    console.log('store state', getContext().store.getState())
+    console.log('store state in MyApp.getInitialProps', getContext().store.getState())
 
     const pageProps = Component.getInitialProps
       ? await Component.getInitialProps(ctx)
@@ -62,7 +55,7 @@ class MyApp extends App {
   }
 
   constructor (props) {
-    console.log('app constructor')
+    console.log('MyApp constructor')
     super(props)
   }
 
@@ -81,5 +74,3 @@ class MyApp extends App {
 }
 
 export default MyApp
-
-// export default withKea(initStore, { debug: process.env.NODE_ENV === 'development' })(MyApp)
