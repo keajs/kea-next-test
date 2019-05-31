@@ -20,6 +20,7 @@ const next = {
 
 export const initStore = (initialState = {}) => {
   console.log("in initStore, got initialState", initialState)
+
   resetContext({
     debug: true,
     plugins: [next],
@@ -33,12 +34,8 @@ export const initStore = (initialState = {}) => {
   })
 }
 
-if (typeof window !== 'undefined') {
-  initStore()
-  window.getContext = getContext
-}
-
 class MyApp extends App {
+  // this runs first on the server
   static async getInitialProps({ Component, ctx }) {
     console.log('MyApp.getInitialProps')
 
@@ -48,13 +45,31 @@ class MyApp extends App {
 
     console.log('store state in MyApp.getInitialProps', getContext().store.getState())
 
+    // TODO: if on server and Component is Kea, mount the logic automatically
+
     const pageProps = Component.getInitialProps
       ? await Component.getInitialProps(ctx)
       : {}
-    return { pageProps }
+
+    let initialState = {}
+
+    if (typeof window === 'undefined') {
+      initialState = getContext().store.getState()
+    }
+
+    return { pageProps, initialState }
   }
 
+  // this runs first on the client
   constructor (props) {
+    if (typeof window !== 'undefined') {
+      const { kea, ...otherState } = props.initialState
+
+      initStore(otherState)
+
+      window.getContext = getContext
+    }
+
     console.log('MyApp constructor')
     super(props)
   }

@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { kea } from 'kea'
+import { kea, getContext } from 'kea'
 
 const indexLogic = kea({
   path: () => ['pages', 'index'],
@@ -46,8 +46,12 @@ function Index ({ counter, doubleCounter, actions: { increment, decrement }}) {
 
 Index.getInitialProps = async function (ctx) {
   console.log('Index.getInitialProps')
-  // console.log(ctx)
-  // ctx.store.dispatch(indexLogic.actions.increment(1))
+
+  const { store } = getContext()
+
+  indexLogic.mount()
+
+  store.dispatch(indexLogic.actions.increment(1))
 }
 
 export default indexLogic(Index)
