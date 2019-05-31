@@ -3,13 +3,13 @@ import PropTypes from 'prop-types'
 import { kea } from 'kea'
 
 const aboutLogic = kea({
-  path: () => ['pages', 'about'],
+  // path: () => ['pages', 'about'],
   actions: () => ({
     increment: amount => ({ amount }),
     decrement: amount => ({ amount })
   }),
   reducers: ({ actions }) => ({
-    acounter: [
+    aboutCounter: [
       0,
       PropTypes.number,
       {
@@ -19,21 +19,21 @@ const aboutLogic = kea({
     ]
   }),
   selectors: ({ selectors }) => ({
-    adoubleCounter: [
-      () => [selectors.acounter],
+    aboutDoubleCounter: [
+      () => [selectors.aboutCounter],
       counter => counter * 2,
       PropTypes.number
     ]
   })
 })
 
-function About ({ acounter, adoubleCounter, actions: { increment, decrement }}) {
+function About ({ aboutCounter, aboutDoubleCounter, actions: { increment, decrement }}) {
   console.log('about render')
   return (
     <div>
       <strong>About</strong>
-      <p>Counter: {acounter}</p>
-      <p>Double Counter: {adoubleCounter}</p>
+      <p>Counter: {aboutCounter}</p>
+      <p>Double Counter: {aboutDoubleCounter}</p>
       <button type="button" onClick={() => increment(1)}>
         Increment
       </button>

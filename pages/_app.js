@@ -22,7 +22,7 @@ export const initStore = (initialState = {}) => {
   console.log("in initStore, got initialState", initialState)
 
   resetContext({
-    debug: true,
+    // debug: true, // bug: {debug:true} throws errors if there are logics without a path
     plugins: [next],
     attachStrategy: 'replace',
     detachStrategy: 'lazy'
@@ -45,7 +45,7 @@ class MyApp extends App {
 
     console.log('store state in MyApp.getInitialProps', getContext().store.getState())
 
-    // TODO: if on server and Component is Kea, mount the logic automatically
+    // TODO: if on server and Component is Kea, mount the logic automatically?
 
     const pageProps = Component.getInitialProps
       ? await Component.getInitialProps(ctx)
@@ -63,7 +63,9 @@ class MyApp extends App {
   // this runs first on the client
   constructor (props) {
     if (typeof window !== 'undefined') {
-      const { kea, ...otherState } = props.initialState
+      // TODO: Should we remove the "kea" paths from preloaded state? Otherwise we could have "kea.inline.COUNTER" conflicts...?
+      // or maybe not because of the resetContext() in getInitialProps above?
+      const { ...otherState } = props.initialState
 
       initStore(otherState)
 

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { kea, getContext } from 'kea'
 
 const indexLogic = kea({
-  path: () => ['pages', 'index'],
+  // path: () => ['pages', 'index'],
   actions: () => ({
     increment: amount => ({ amount }),
     decrement: amount => ({ amount })
