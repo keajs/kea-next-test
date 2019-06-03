@@ -2,6 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { kea, getContext } from 'kea'
 
+import { put } from 'redux-saga/effects'
+
 const indexLogic = kea({
   // path: () => ['pages', 'index'],
   actions: () => ({
@@ -24,6 +26,18 @@ const indexLogic = kea({
       counter => counter * 2,
       PropTypes.number
     ]
+  }),
+  start: function * () {
+    console.log('saga started')
+    yield put(this.actions.increment(10))
+  },
+  stop: function * () {
+    console.log('saga stoppeds')
+  },
+  takeLatest: ({ actions }) => ({
+    [actions.increment]: function * (action) {
+      console.log('Increment called with', action.payload.amount)
+    }
   })
 })
 

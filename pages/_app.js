@@ -1,17 +1,17 @@
 import React from 'react'
 import { Provider } from 'react-redux'
 import App, { Container } from 'next/app'
-// import withRedux from 'next-redux-wrapper'
-// import { initStore } from '../store'
 import Layout from '../components/MyLayout'
 
-import { getStore, activatePlugin, resetContext, getContext } from 'kea'
+import { getStore, resetContext, getContext, closeContext } from 'kea'
+import sagaPlugin from 'kea-saga'
 
-export const initStore = (initialState = {}) => {
-  console.log("in initStore, got initialState", initialState)
+export const initKeaContext = (initialState = {}) => {
+  console.log("in initKeaContext, got initialState", initialState)
 
   resetContext({
     debug: true,
+    plugins: [sagaPlugin],
     attachStrategy: 'replace',
     detachStrategy: 'lazy'
   })
@@ -28,7 +28,7 @@ class MyApp extends App {
     console.log('MyApp.getInitialProps')
 
     if (typeof window === 'undefined') {
-      initStore()
+      initKeaContext()
     }
 
     console.log('store state in MyApp.getInitialProps', getContext().store.getState())
@@ -50,17 +50,21 @@ class MyApp extends App {
       initialState = getContext().store.getState()
     }
 
+    if (typeof window === 'undefined') {
+      // closeContext()
+    }
+
     return { pageProps, initialState }
   }
 
   // this runs first on the client
   constructor (props) {
     if (typeof window !== 'undefined') {
-      // TODO: Should we remove the "kea" paths from preloaded state? Otherwise we could have "kea.inline.COUNTER" conflicts...?
-      // or maybe not because of the resetContext() in getInitialProps above?
+    // TODO: Should we remove the "kea" paths from preloaded state? Otherwise we could have "kea.inline.COUNTER" conflicts...?
+    // or maybe not because of the resetContext() in getInitialProps above?
       const { ...otherState } = props.initialState
 
-      initStore(otherState)
+      initKeaContext(otherState)
 
       window.getContext = getContext
     }
