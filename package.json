@@ -15,8 +15,8 @@
   "dependencies": {
     "express": "^4.16.4",
     "isomorphic-unfetch": "^3.0.0",
-    "kea": "1.0.0-beta.25",
-    "kea-saga": "^1.0.0-beta.4",
+    "kea": "1.0.0-beta.32",
+    "kea-saga": "^1.0.0-beta.6",
     "next": "^8.1.0",
     "next-redux-wrapper": "^3.0.0-alpha.2",
     "react": "^16.8.6",
