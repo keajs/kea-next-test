@@ -3,22 +3,21 @@ import { Provider } from 'react-redux'
 import App, { Container } from 'next/app'
 import Layout from '../components/MyLayout'
 
-import { getStore, resetContext, getContext, closeContext } from 'kea'
+import { closeContext, resetContext, getContext } from 'kea'
 import sagaPlugin from 'kea-saga'
 
 export const initKeaContext = (initialState = {}) => {
   console.log("in initKeaContext, got initialState", initialState)
 
   resetContext({
-    debug: true,
+    defaults: initialState, // defaults for logic
     plugins: [sagaPlugin],
-    attachStrategy: 'replace',
-    detachStrategy: 'lazy'
-  })
-
-  getStore({
-    paths: ['kea', 'pages', 'scenes'],
-    preloadedState: initialState
+    attachStrategy: 'dispatch',
+    detachStrategy: 'dispatch',
+    createStore: {
+      paths: ['kea', 'pages'],
+      preloadedState: initialState // for non-kea reducers  
+    }
   })
 }
 
@@ -31,53 +30,49 @@ class MyApp extends App {
       initKeaContext()
     }
 
-    console.log('store state in MyApp.getInitialProps', getContext().store.getState())
+    // console.log('store state in MyApp.getInitialProps', getContext().store.getState())
+
+    // so we can still capture the state after the getInitialState logic unmounts
+    getContext().options.detachStrategy = 'persist'
 
     let pageProps = {}
 
     if (Component.getInitialProps) {
       pageProps = await Component.getInitialProps(ctx)
-    } else if (Component._wrapper && Component._wrappedKlass && Component._wrappedKlass.getInitialProps) {
-      let unmount = Component._wrapper.mount && Component._wrapper.mount()
-
-      pageProps = await Component._wrappedKlass.getInitialProps(ctx)
-
-      unmount && unmount()
+    } else if (Component._wrapper && Component._wrappedComponent && Component._wrappedComponent.getInitialProps) {
+      pageProps = await Component._wrappedComponent.getInitialProps(ctx)
     }
 
-    let initialState = {}
-    if (typeof window === 'undefined') {
-      initialState = getContext().store.getState()
-    }
+    let initialState = getContext().store.getState()
 
-    if (typeof window === 'undefined') {
-      // closeContext()
-    }
+    getContext().options.detachStrategy = 'dispatch'
+
+    console.log('returning from MyApp.getInitialProps', { pageProps, initialState })
 
     return { pageProps, initialState }
   }
 
   // this runs first on the client
   constructor (props) {
+    console.log('MyApp constructor')
+
     if (typeof window !== 'undefined') {
-    // TODO: Should we remove the "kea" paths from preloaded state? Otherwise we could have "kea.inline.COUNTER" conflicts...?
-    // or maybe not because of the resetContext() in getInitialProps above?
+      // remove here what is not needed
       const { ...otherState } = props.initialState
-
       initKeaContext(otherState)
-
       window.getContext = getContext
     }
 
-    console.log('MyApp constructor')
     super(props)
   }
 
   render () {
     const { Component, pageProps } = this.props
+    const { store } = getContext()
+
     return (
       <Container>
-        <Provider store={getContext().store}>
+        <Provider store={store}>
           <Layout>
             <Component {...pageProps} />
           </Layout>

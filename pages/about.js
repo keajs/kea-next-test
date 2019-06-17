@@ -46,10 +46,11 @@ function About ({ aboutCounter, aboutDoubleCounter, actions: { increment, decrem
 
 About.getInitialProps = async function (ctx) {
   console.log('About.getInitialProps')
-
   const { store } = getContext()
 
+  const unmount = aboutLogic.mount()
   store.dispatch(aboutLogic.actions.increment(-1))
+  unmount()
 }
 
 export default aboutLogic(About)
